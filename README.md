@@ -1,3 +1,2 @@
 # bike
-for competition \n
-as you see,this is a simple thought.
+it's for competition,as you see,this is a simple thought.
