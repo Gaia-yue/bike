@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script th:src="@{/static/js/jquery-1.7.2.js}"></script>
+    <!-- 引入刚刚下载的 ECharts 文件 -->
+    <script th:src="@{/static/js/echarts.js}"></script>
+
+</head>
+<body>
+
+    <div id="main" style="width: 600px;height: 400px"></div>
+
+    <script>
+        // 1、ECharts最基本的代码结构
+        // 2、准备中国地图的矢量数据
+        // 3、使用Ajax获取矢量地图数据
+        // 4、在Ajax的回调函数中注册地图矢量数据 echarts.registerMap('HuangShi', 矢量地图数据);
+        // 5、配置geo的type为'map',map为'HuangShi'
+
+        var airdata = [
+            { name: '黄石港区', value: 20 },
+            { name: '西塞山区', value: 10 },
+            { name: '下陆区', value: 50 },
+            { name: '铁山区', value: 22 },
+            { name: '大冶市', value: 15 },
+            { name: '阳新县', value: 10}
+        ];
+
+        var mCharts = echarts.init(document.getElementById('main'));
+        $.get('/echartsProject/static/js/HuangShi.json',function (ret) {
+            echarts.registerMap('HuangShi',ret);
+            var option = {
+                title: {
+                    text: '黄石地图',
+                    textStyle: {
+                        color: 'red'
+                    },
+                    left: 300
+                },
+                tooltip: {
+                    trigger: 'item',
+                    triggerOn: 'mousemove',
+                    /*formatter: '{b}<br>{c}'*/
+
+                    formatter: function (arg) {
+                        console.log(arg);
+                        return arg.data.name + "<br>" + arg.data.value
+                    }
+                },
+                geo: {
+                    type: 'map',
+                    map: 'HuangShi',  // HuangShi需要和registerMap中的第一个参数保持一致
+                    roam: true,  // 设置允许缩放以及拖动的效果
+                    label: {
+                        show: true  // 展示标签
+                    },
+                    zoom: 1,  // 设置初始化缩放比例
+                    center: [115.212883, 29.841572]  // 设置地图中心点坐标
+                },
+                series: [
+                    {
+                        data: airdata,
+                        geoIndex: 0,  // 将空气质量的数据和第0个geo配置关联起来
+                        type: 'map'
+                    }
+                ],
+                visualMap: {
+                    min: 0,
+                    max: 80,
+                    inRange: {
+                        color: ['lightskyblue', 'yellow', 'orangered']
+                    },
+                    calculable: true
+                }
+            };
+            mCharts.setOption(option);
+            mCharts.on('click',function (arg) {
+               console.log(arg);
+               console.log("click....");
+            });
+        })
+
+
+    </script>
+
+</body>
+</html>
